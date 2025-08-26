@@ -1,4 +1,4 @@
-const { developmentChains, netWorkConfig } = require("../helper-hardhat-config")
+const { developmentChains, networkConfig } = require("../helper-hardhat-config")
 
 const { ethers, network } = require("hardhat");
 
@@ -24,8 +24,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         linkTokenAddr = ccipConfig.linkToken_;
 
     } else {
-        sourceChainRouter = netWorkConfig[network.config.chainId].router
-        linkTokenAddr = netWorkConfig[network.config.chainId].linkToken
+        sourceChainRouter = networkConfig[network.config.chainId].router
+        linkTokenAddr = networkConfig[network.config.chainId].linkToken
     }
 
 
