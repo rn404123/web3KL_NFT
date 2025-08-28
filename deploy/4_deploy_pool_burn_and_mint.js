@@ -1,4 +1,4 @@
-const { developmentChains, netWorkConfig } = require("../helper-hardhat-config")
+const { developmentChains, networkConfig } = require("../helper-hardhat-config")
 const { ethers,network,getNamedAccounts } = require("hardhat");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
@@ -21,8 +21,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
 
     } else {
-        sourceChainRouter = netWorkConfig[network.config.chainId].router
-        linkTokenAddr = netWorkConfig[network.config.chainId].linkToken
+        destChainRouter = networkConfig[network.config.chainId].router
+        linkTokenAddr = networkConfig[network.config.chainId].linkToken
     }
 
     const wnftDeploymnt = await deployments.get("WrappedMyToken");
