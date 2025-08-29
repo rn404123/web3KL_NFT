@@ -28,6 +28,7 @@ task("lock-and-cross", "chain seletor of dest chain")
             receiver = nftPoolBurnAndMint.address
             console.log(`receiver 没有设置，从配置文件读取`)
         }
+        
         console.log(`receiver is ${receiver}`)
 
         const nftPoolLockAndRelease = await ethers.getContract("NFTPoolLockAndRelease", firstAccount)
