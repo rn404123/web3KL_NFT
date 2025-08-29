@@ -3,7 +3,7 @@ const { task } = require("hardhat/config")
 const { networkConfig } = require("../helper-hardhat-config")
 
 
-task("lock-and-cross", "chain seletor of dest chain")
+task("burn-and-cross", "chain seletor of dest chain")
     .addOptionalParam("chainselector")
     .addOptionalParam("receiver", "receiver address on dest chain")
     .addOptionalParam("tokenid", "token ID to be crossed chain")
@@ -24,8 +24,8 @@ task("lock-and-cross", "chain seletor of dest chain")
         if (taskArgs.receiver) {
             receiver = taskArgs.receiver
         } else {
-            const nftPoolBurnAndMint = await hre.companionNetworks["destChain"].deployments.get("NFTPoolBurnAndMint")
-            receiver = nftPoolBurnAndMint.address
+            const nftPoolLockAndRelease = await hre.companionNetworks["destChain"].deployments.get("NFTPoolLockAndRelease")
+            receiver = nftPoolLockAndRelease.address
             console.log(`receiver 没有设置，从配置文件读取`)
         }
 
@@ -37,29 +37,29 @@ task("lock-and-cross", "chain seletor of dest chain")
         //转移link token to 合约地址
         const klinkTokenAddress = networkConfig[network.config.chainId].linkToken
         const linkToken = await ethers.getContractAt("LinkToken", klinkTokenAddress)
-        const nftPoolLockAndRelease = await ethers.getContract("NFTPoolLockAndRelease", firstAccount)
-        //  const transferTx = await linkToken.transfer(nftPoolLockAndRelease.target, ethers.parseEther("10"))
-        // await transferTx.wait(6)
-        const balance = await linkToken.balanceOf(nftPoolLockAndRelease.target)
+        const nftPoolBurnAndMint = await ethers.getContract("NFTPoolBurnAndMint", firstAccount)
+        //   const transferTx = await linkToken.transfer(nftPoolBurnAndMint.target, ethers.parseEther("10"))
+        //  await transferTx.wait(6)
+        const balance = await linkToken.balanceOf(nftPoolBurnAndMint.target)
 
         console.log(`balance of pool is ${balance}`)
 
-        const nft = await ethers.getContract("MyToken", firstAccount)
+        const wnft = await ethers.getContract("WrappedMyToken", firstAccount)
         //授权nftPoolLockAndRelease 合约权限调用这个持有的tokenid
-        console.log(`看看pool地址 ${nftPoolLockAndRelease.target}`)
-        await nft.approve(nftPoolLockAndRelease.target, tokenId)
+        console.log(`看看pool地址 ${nftPoolBurnAndMint.target}`)
+      //  await wnft.approve(nftPoolBurnAndMint.target, tokenId)
 
-        console.log(`nftPoolLockAndRelease 授权成功`)
+        console.log(`nftPoolBurnAndMint 授权成功`)
 
         console.log("tokenId:", tokenId)
         console.log("firstAccount:", firstAccount)
         console.log("chainSelector:", chainSelector)
         console.log("receiver:", receiver)
-        console.log("nftPoolLockAndRelease.address:", nftPoolLockAndRelease.address)
+        console.log("nftPoolBurnAndMint.address:", nftPoolBurnAndMint.target)
         //授权成功即可调用 lockAndSendNFT
-        const lockAndSendNFTtx = await nftPoolLockAndRelease.lockAndSendNFT(tokenId, firstAccount, chainSelector, receiver)
+        const burnAndMintNFTtx = await nftPoolBurnAndMint.burnAndSendNFT(tokenId, firstAccount, chainSelector, receiver)
 
-        console.log(`ccip 已经发送， 哈希地址是 ${lockAndSendNFTtx.hash}`)
+        console.log(`ccip 已经发送， 哈希地址是 ${burnAndMintNFTtx.hash}`)
     })
 
 module.exports = {}
